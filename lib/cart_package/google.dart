@@ -30,7 +30,8 @@ class _GoogleWalletScreenState extends State<GoogleWalletScreen> {
       type: WalletCardType.generic,
       platformData: {
         'issuerId': '3388000000023031029',
-        'classId': '3388000000023031029.DOMAPPDEVNEW',
+        'classId':
+            '3388000000023031029.DOMAPPDEVNEW', // Make sure this is your actual class ID
       },
       metadata: WalletCardMetadata(
         title: 'My Google Wallet Loyalty Card',

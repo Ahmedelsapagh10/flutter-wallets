@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const AppleWalletScreen()),
               );
             },
+            style: ButtonStyle(),
           ),
 
           // ElevatedButton(

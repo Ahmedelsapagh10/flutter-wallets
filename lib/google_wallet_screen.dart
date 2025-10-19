@@ -41,7 +41,7 @@ class GoogleWalletCard extends StatelessWidget {
 
 final String _passId = const Uuid()
     .v4(); //! it's value of qr code and we will change it later and user enter his member id
-const String _passClass = 'DOMAPPDEVNEW';
+const String _passClass = 'NEWGOOGLEWALLET';
 const String _issuerId = '3388000000023031029';
 const String _issuerEmail = 'ahmedelsapagh179@gmail.com';
 

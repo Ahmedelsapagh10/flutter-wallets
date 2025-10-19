@@ -12,7 +12,7 @@ class AppleWalletScreen extends StatelessWidget {
       type: WalletCardType.generic,
       platformData: {
         'passTypeIdentifier':
-            'pass.com.domapp.wallettest', //! [ 2 ] get it from Certificates, Identifiers & Profiles → Identifiers. Pass Type IDs
+            'pass.com.domapp.wallettest1', //! [ 2 ] get it from Certificates, Identifiers & Profiles → Identifiers. Pass Type IDs
         'teamIdentifier': 'UB7HL9MB7F', //! [ 3 ] Apple Developer Team ID
       },
       metadata: WalletCardMetadata(

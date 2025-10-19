@@ -1,4 +1,4 @@
-package com.domapp.wallettest
+package com.domapp.wallettest1
 
 import io.flutter.embedding.android.FlutterActivity
 
