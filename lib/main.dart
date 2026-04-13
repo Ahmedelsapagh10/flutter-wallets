@@ -41,16 +41,16 @@ class MyApp extends StatelessWidget {
           //     );
           //   },
           // ),
-          // ElevatedButton(
-          //   style: ButtonStyle(),
-          //   child: const Text("Add to Samsung Wallet"),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (_) => const SamsungScreen()),
-          //     );
-          //   },
-          // ),
+          ElevatedButton(
+            style: ButtonStyle(),
+            child: const Text("Add to Samsung Wallet"),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SamsungScreen()),
+              );
+            },
+          ),
           // const SizedBox(height: 20),
         ],
       ),

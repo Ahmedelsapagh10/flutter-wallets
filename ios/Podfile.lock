@@ -1,6 +1,4 @@
 PODS:
-  - apple_passkit (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
   - flutter_wallet_card (1.0.0):
     - Flutter
@@ -9,33 +7,35 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
-  - apple_passkit (from `.symlinks/plugins/apple_passkit/ios`)
   - Flutter (from `Flutter`)
   - flutter_wallet_card (from `.symlinks/plugins/flutter_wallet_card/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
     - OpenSSL-Universal
 
 EXTERNAL SOURCES:
-  apple_passkit:
-    :path: ".symlinks/plugins/apple_passkit/ios"
   Flutter:
     :path: Flutter
   flutter_wallet_card:
     :path: ".symlinks/plugins/flutter_wallet_card/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  apple_passkit: cfde108b6976f5ac79dddc174a7b806f94f81f83
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_wallet_card: fa464b6f36c9c7ffda50f48b659b2b056d2eeaa8
   OpenSSL-Universal: 6082b0bf950e5636fe0d78def171184e2b3899c2
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
 PODFILE CHECKSUM: 4305caec6b40dde0ae97be1573c53de1882a07e5
 
