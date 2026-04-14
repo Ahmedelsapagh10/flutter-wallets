@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wallet_app/cart_package/apple.dart';
 import 'package:wallet_app/cart_package/google.dart';
 import 'package:wallet_app/cart_package/samsung.dart';
-import 'package:wallet_app/google_wallet_screen.dart';
+import 'package:wallet_app/google_wallet.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
         children: [
           GoogleWalletCard(),
           ElevatedButton(
-            child: const Text("Apple Wallet Screen"),
             onPressed: () {
               Navigator.push(
                 context,
@@ -30,20 +29,21 @@ class MyApp extends StatelessWidget {
               );
             },
             style: ButtonStyle(),
+            child: const Text('Apple Wallet (flutter_wallet_card)'),
           ),
 
-          // ElevatedButton(
-          //   child: const Text("Google Wallet Screen"),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (_) => const GoogleWalletScreen()),
-          //     );
-          //   },
-          // ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const GoogleWalletScreen()),
+              );
+            },
+            child: const Text('Google Wallet (flutter_wallet_card)'),
+          ),
           ElevatedButton(
             style: ButtonStyle(),
-            child: const Text("Add to Samsung Wallet"),
+            child: const Text('Add to Samsung Wallet'),
             onPressed: () {
               Navigator.push(
                 context,

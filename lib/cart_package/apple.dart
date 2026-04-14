@@ -1,151 +1,137 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_wallet_card/flutter_wallet_card.dart';
-import 'package:flutter_wallet_card/models/wallet_card.dart';
+import 'dart:io';
 
-class AppleWalletScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_wallet_card/flutter_wallet_card.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
+
+class AppleWalletScreen extends StatefulWidget {
   const AppleWalletScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final card = WalletCard(
-      id: 'user-apple-12345', //! [ 1 ] user will enter this id
-      type: WalletCardType.generic,
-      platformData: {
-        'passTypeIdentifier':
-            'pass.com.domapp.wallettest1', //! [ 2 ] get it from Certificates, Identifiers & Profiles → Identifiers. Pass Type IDs
-        'teamIdentifier': 'UB7HL9MB7F', //! [ 3 ] Apple Developer Team ID
-      },
-      metadata: WalletCardMetadata(
-        title: 'My Apple Wallet Card',
-        description: 'A sample pass for Apple Wallet',
-        organizationName: 'Your Company',
-        serialNumber: 'USER12345', //! [ 4 ] must be unique
+  State<AppleWalletScreen> createState() => _AppleWalletScreenState();
+}
+
+class _AppleWalletScreenState extends State<AppleWalletScreen> {
+  static const bool _useLocalAsset = true;
+  static const String _localPassAsset = 'assets/passes/domapp.pkpass';
+  static const String _signedPassUrl = 'https://walletpasses.io/sample.pkpass';
+
+  late final String _requestId;
+  late final Future<bool> _isWalletAvailable;
+
+  bool get _isConfigured => _useLocalAsset
+      ? _localPassAsset.endsWith('.pkpass')
+      : !_signedPassUrl.contains('example.com');
+
+  @override
+  void initState() {
+    super.initState();
+    _requestId = const Uuid().v4();
+    _isWalletAvailable = FlutterWalletCard.isWalletAvailable;
+  }
+
+  Future<void> _addApplePass() async {
+    if (!_isConfigured) {
+      _showMessage(
+        _useLocalAsset
+            ? 'Put signed pass file at assets/passes/domapp.pkpass'
+            : 'Set your real signed .pkpass URL in apple.dart',
+        isError: true,
+      );
+      return;
+    }
+
+    try {
+      final success = _useLocalAsset
+          ? await _addApplePassFromAsset()
+          : await _addApplePassFromUrl();
+      _showMessage(
+        success ? 'Added to Apple Wallet.' : 'Card was not added.',
+        isError: !success,
+      );
+    } catch (e) {
+      _showMessage('Apple Wallet error: $e', isError: true);
+    }
+  }
+
+  Future<bool> _addApplePassFromAsset() async {
+    final byteData = await rootBundle.load(_localPassAsset);
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/domapp_$_requestId.pkpass');
+    await file.writeAsBytes(
+      byteData.buffer.asUint8List(
+        byteData.offsetInBytes,
+        byteData.lengthInBytes,
       ),
-      visuals: WalletCardVisuals(
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        labelColor: Colors.grey,
+      flush: true,
+    );
+    return FlutterWalletCard.addFromFile(file);
+  }
+
+  Future<bool> _addApplePassFromUrl() async {
+    final url = '$_signedPassUrl?requestId=$_requestId';
+    return FlutterWalletCard.addFromUrl(url);
+  }
+
+  void _showMessage(String message, {required bool isError}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
       ),
     );
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Apple Wallet")),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text("Add Card to Apple Wallet"),
-          onPressed: () async {
-            bool success = false;
-            try {
-              success = await FlutterWalletCard.addToWallet(card);
-            } catch (e) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Error: $e')));
-              return;
-            }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  success ? 'Added to Apple Wallet!' : 'Failed to add card.',
+      appBar: AppBar(title: const Text('Apple Wallet (flutter_wallet_card)')),
+      body: FutureBuilder<bool>(
+        future: _isWalletAvailable,
+        builder: (context, snapshot) {
+          final isAvailable = snapshot.data == true;
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _useLocalAsset
+                      ? 'Signed pass asset: $_localPassAsset'
+                      : 'Signed pass URL: $_signedPassUrl',
                 ),
-              ),
-            );
-          },
-        ),
+                const SizedBox(height: 8),
+                Text(
+                  isAvailable
+                      ? 'Wallet API is available.'
+                      : 'Wallet API is not available on this device.',
+                  style: TextStyle(
+                    color: isAvailable ? Colors.green : Colors.orange,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: isAvailable ? _addApplePass : null,
+                    child: Text(
+                      _useLocalAsset
+                          ? 'Add Signed .pkpass from App Asset'
+                          : 'Add Signed .pkpass to Apple Wallet',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 }
-// ignore_for_file: use_build_context_synchronously
-
-// import 'package:flutter/material.dart';
-// import 'package:apple_passkit/apple_passkit.dart';
-// import 'package:flutter/services.dart';
-
-// class AppleScreen extends StatefulWidget {
-//   const AppleScreen({super.key});
-
-//   @override
-//   State<AppleScreen> createState() => _AppleScreenState();
-// }
-
-// class _AppleScreenState extends State<AppleScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(body: AppleWidget());
-//   }
-// }
-
-// final _applePasskitPlugin = ApplePassKit();
-
-// class AppleWidget extends StatelessWidget {
-//   const AppleWidget();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Column(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           ElevatedButton(
-//             onPressed: () async {
-//               final isAvailable = await _applePasskitPlugin
-//                   .isPassLibraryAvailable();
-//               ScaffoldMessenger.of(context).showSnackBar(
-//                 SnackBar(content: Text('Is library available: $isAvailable')),
-//               );
-//             },
-//             child: const Text('Is library available?'),
-//           ),
-//           ElevatedButton(
-//             onPressed: () async {
-//               final canAdd = await _applePasskitPlugin.canAddPasses();
-//               ScaffoldMessenger.of(context).showSnackBar(
-//                 SnackBar(content: Text('Can add passes: $canAdd')),
-//               );
-//             },
-//             child: const Text('Can add passes?'),
-//           ),
-//           ElevatedButton(
-//             onPressed: () async {
-//               await _applePasskitPlugin.addPass(await getFlightPass());
-//             },
-//             child: const Text('Add pass variant 1'),
-//           ),
-//           ElevatedButton(
-//             onPressed: () async {
-//               await _applePasskitPlugin.addPassesWithoutUI(
-//                 await getMultiplePasses(),
-//               );
-//             },
-//             child: const Text('Add multiple passes via popup'),
-//           ),
-//           ElevatedButton(
-//             onPressed: () async {
-//               await _applePasskitPlugin.addPasses(await getMultiplePasses());
-//             },
-//             child: const Text('Add multiple passes via ViewController'),
-//           ),
-//           ElevatedButton(
-//             onPressed: () async {
-//               final passes = await _applePasskitPlugin.passes();
-//               ScaffoldMessenger.of(context).showSnackBar(
-//                 SnackBar(content: Text('Passes: ${passes.join(', ')}')),
-//               );
-//             },
-//             child: const Text('Passes'),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-// Future<List<Uint8List>> getMultiplePasses() async {
-//   return [await getFlightPass()];
-// }
-
-// Future<Uint8List> getFlightPass() async {
-//   final pkPass = await rootBundle.load('assets/coupon.pkpass');
-//   return pkPass.buffer.asUint8List(pkPass.offsetInBytes, pkPass.lengthInBytes);
-// }

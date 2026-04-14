@@ -6,7 +6,7 @@
         android:label="wallet_app"
         android:name="${applicationName}"
         android:enableOnBackInvokedCallback="true"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@android:drawable/sym_def_app_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
